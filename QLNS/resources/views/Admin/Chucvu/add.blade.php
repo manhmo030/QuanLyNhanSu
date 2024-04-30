@@ -17,7 +17,16 @@
                             <input type="number" class="form-control" id="floatingInput" name="capbac" required>
                             <label for="floatingInput">Cấp Bậc</label>
                         </div>
-
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"
+                                name="mapb">
+                                <option value=""></option>
+                                @foreach ($phongban as $item)
+                                    <option value="{{ $item->MaPB }}">{{ $item->TenPB }}</option>
+                                @endforeach
+                            </select>
+                            <label for="floatingSelect">Phòng Ban</label>
+                        </div>
 
                         <button type="submit" class="btn btn-primary">Add</button>
                     </form>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 28, 2024 at 02:46 PM
+-- Generation Time: Apr 30, 2024 at 11:31 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -31,17 +31,15 @@ CREATE TABLE `admin` (
   `id` int(11) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
-  `name` varchar(100) DEFAULT NULL,
-  `phone` varchar(100) DEFAULT NULL,
-  `avatar` varchar(100) DEFAULT NULL
+  `MaNV` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`id`, `email`, `password`, `name`, `phone`, `avatar`) VALUES
-(1, 'admin1@gmail.com', '$2y$12$3JKWq41QOKClrrKsWOHThuEdx2fnmcoiD9x1raysgf/muofvmyZte', '', '', '');
+INSERT INTO `admin` (`id`, `email`, `password`, `MaNV`) VALUES
+(1, 'admin1@gmail.com', '$2y$12$3JKWq41QOKClrrKsWOHThuEdx2fnmcoiD9x1raysgf/muofvmyZte', 1);
 
 -- --------------------------------------------------------
 
@@ -72,8 +70,8 @@ CREATE TABLE `bangluong` (
 
 CREATE TABLE `calam` (
   `MaCa` bigint(20) NOT NULL,
-  `TenCa` varchar(50) NOT NULL,
-  `LoaiCa` varchar(50) NOT NULL,
+  `TenCa` enum('Hành Chính','Sáng','Chiều','Tối') NOT NULL,
+  `LoaiCa` enum('Cố Định','Linh Hoạt') NOT NULL,
   `GioBatDau` varchar(10) NOT NULL,
   `GioKetThuc` varchar(10) NOT NULL,
   `SoGioLamViec` int(11) NOT NULL
@@ -84,10 +82,10 @@ CREATE TABLE `calam` (
 --
 
 INSERT INTO `calam` (`MaCa`, `TenCa`, `LoaiCa`, `GioBatDau`, `GioKetThuc`, `SoGioLamViec`) VALUES
-(1, 'Ca hành chính', 'cố định', '8:00 ', '17:30', 8),
-(2, 'Ca sáng', 'linh hoạt', '8:00', '12:00', 4),
-(3, 'Ca Chiều', 'linh hoạt', '13:30', '17:30', 4),
-(4, 'Ca tối', 'linh hoạt', '18:00', '22:00', 4);
+(1, 'Hành Chính', 'Cố Định', '8:00 ', '17:30', 8),
+(2, 'Sáng', 'Linh Hoạt', '8:00', '12:00', 4),
+(3, 'Chiều', 'Linh Hoạt', '13:30', '17:30', 4),
+(4, 'Tối', 'Linh Hoạt', '18:00', '22:00', 4);
 
 -- --------------------------------------------------------
 
@@ -121,7 +119,8 @@ INSERT INTO `chucvu` (`MaCV`, `TenCV`, `CapBac`, `updated_at`, `MaPB`) VALUES
 (11, 'Thư ký kinh doanh', 3, NULL, 1),
 (12, 'Thư ký vận hành', 3, NULL, 1),
 (13, 'Thư ký', 2, NULL, 1),
-(14, 'Nhân viên', 4, NULL, 1);
+(14, 'Nhân viên', 4, '2024-04-29', 2),
+(18, 'Nhân Viên', 1, NULL, 3);
 
 -- --------------------------------------------------------
 
@@ -133,20 +132,21 @@ CREATE TABLE `dieuchuyennhanvien` (
   `MaPhieu` bigint(20) NOT NULL,
   `TenPhieu` varchar(50) NOT NULL,
   `MaNV` bigint(20) NOT NULL,
-  `PBHienTai` varchar(50) NOT NULL,
-  `PBChuyenDen` varchar(50) NOT NULL,
-  `NgayKT` datetime NOT NULL,
-  `NgayBD` datetime NOT NULL,
-  `NgayDuyet` datetime NOT NULL,
-  `TrangThai` varchar(50) DEFAULT NULL
+  `CVHienTai` bigint(20) NOT NULL,
+  `CVChuyenDen` bigint(20) NOT NULL,
+  `NgayKT` date NOT NULL,
+  `NgayBD` date NOT NULL,
+  `NgayDuyet` date DEFAULT NULL,
+  `TrangThai` enum('Đã Duyệt','Đang Chờ','Từ Chối') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `dieuchuyennhanvien`
 --
 
-INSERT INTO `dieuchuyennhanvien` (`MaPhieu`, `TenPhieu`, `MaNV`, `PBHienTai`, `PBChuyenDen`, `NgayKT`, `NgayBD`, `NgayDuyet`, `TrangThai`) VALUES
-(1, 'ĐCPB - 01', 5, 'Kế toán', 'Kinh doanh', '2024-04-19 16:02:07', '2024-04-22 16:02:07', '2024-04-20 16:02:07', '');
+INSERT INTO `dieuchuyennhanvien` (`MaPhieu`, `TenPhieu`, `MaNV`, `CVHienTai`, `CVChuyenDen`, `NgayKT`, `NgayBD`, `NgayDuyet`, `TrangThai`) VALUES
+(1, 'ĐCPB - 01', 5, 5, 4, '2024-04-19', '2024-04-22', '2024-04-20', 'Từ Chối'),
+(5, 'aaaa', 2, 11, 9, '2024-04-09', '2024-04-25', NULL, 'Đang Chờ');
 
 -- --------------------------------------------------------
 
@@ -170,7 +170,7 @@ CREATE TABLE `hopdong` (
 
 INSERT INTO `hopdong` (`MaHD`, `TenHD`, `MaLoaiHD`, `NgayKy`, `NgayBatDau`, `NgayKetThuc`, `MaNV`) VALUES
 (1, 'HDTV - 01', 3, '2023-05-10', '2023-05-15', '2023-07-15', 2),
-(2, 'HDKTH - 01', 1, '2023-10-21', '2023-10-23', NULL, 1);
+(2, 'HDKTH - 01', 3, '2023-10-21', '2023-10-23', '2024-04-30', 1);
 
 -- --------------------------------------------------------
 
@@ -253,23 +253,24 @@ CREATE TABLE `nhanvien` (
   `Email` varchar(50) DEFAULT NULL,
   `QueQuan` varchar(50) DEFAULT NULL,
   `MaCV` bigint(20) NOT NULL,
-  `MaNgayNghi` bigint(20) DEFAULT NULL
+  `MaNgayNghi` bigint(20) DEFAULT NULL,
+  `anh` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `nhanvien`
 --
 
-INSERT INTO `nhanvien` (`MaNV`, `Hoten`, `GioiTinh`, `NgaySinh`, `DiaChi`, `SoDienThoai`, `SoCCCD`, `Email`, `QueQuan`, `MaCV`, `MaNgayNghi`) VALUES
-(1, 'Nguyễn Kiên Cường', 'nam', '1985-06-20', 'Ngõ 90, Thanh Xuân Trung, Thanh Xuân, Hà Nội', '0989746945', 38083000385, 'cuongnk@gmail.com', 'Hà Nội', 5, 0),
-(2, 'Nguyễn Thị Hồng Nhung', 'nữ', '1989-09-10', NULL, '0899845934', NULL, 'nhungnguyen@gmail.com', 'Khánh Hoà', 3, NULL),
-(3, 'Trần Thị Mỹ Anh', 'nữ', '1990-10-06', NULL, '0988747922', NULL, 'myanh@gmail.com', 'Thái Bình', 4, NULL),
-(4, 'Nguyễn Văn Được', 'nam', '1987-04-11', NULL, '0890483764', NULL, 'duocnv@gmail.com', 'Ninh Bình', 10, NULL),
-(5, 'Lê Thu Nhung', 'nữ', '1990-10-21', NULL, '0998497235', NULL, 'nhungthu@gmail.com', 'Hà Nội', 5, NULL),
-(6, 'Phạm Thị Duyên', 'nữ', '1989-11-29', NULL, '0928497456', NULL, 'duyenpt@gmail.com', 'Bắc Ninh', 6, NULL),
-(7, 'Nguyễn Thị Thuỳ Dung', 'nữ', '1990-02-26', NULL, '0898973946', NULL, 'thuydung@gmail.com', 'Hà Nội', 11, NULL),
-(8, 'Trần Văn Nam', 'nam', '1990-05-19', NULL, '0975743987', NULL, 'namtv@gmail.com', 'Ninh Bình', 7, NULL),
-(9, 'Trần Văn Minh', 'Nữ', '1986-05-19', 'bắc ninh', '0998595349', 435465, 'minhtran@gmail.com', 'Hà Nội', 8, NULL);
+INSERT INTO `nhanvien` (`MaNV`, `Hoten`, `GioiTinh`, `NgaySinh`, `DiaChi`, `SoDienThoai`, `SoCCCD`, `Email`, `QueQuan`, `MaCV`, `MaNgayNghi`, `anh`) VALUES
+(1, 'Nguyễn Kiên Cường', 'nam', '1985-06-20', 'Ngõ 90, Thanh Xuân Trung, Thanh Xuân, Hà Nội', '0989746945', 38083000385, 'cuongnk@gmail.com', 'Hà Nội', 5, 0, 'anh1.jpg'),
+(2, 'Nguyễn Thị Hồng Nhung', 'nữ', '1989-09-10', NULL, '0899845934', NULL, 'nhungnguyen@gmail.com', 'Khánh Hoà', 3, NULL, NULL),
+(3, 'Trần Thị Mỹ Anh', 'nữ', '1990-10-06', NULL, '0988747922', NULL, 'myanh@gmail.com', 'Thái Bình', 4, NULL, NULL),
+(4, 'Nguyễn Văn Được', 'nam', '1987-04-11', NULL, '0890483764', NULL, 'duocnv@gmail.com', 'Ninh Bình', 10, NULL, NULL),
+(5, 'Lê Thu Nhung', 'nữ', '1990-10-21', NULL, '0998497235', NULL, 'nhungthu@gmail.com', 'Hà Nội', 5, NULL, NULL),
+(6, 'Phạm Thị Duyên', 'nữ', '1989-11-29', NULL, '0928497456', NULL, 'duyenpt@gmail.com', 'Bắc Ninh', 6, NULL, NULL),
+(7, 'Nguyễn Thị Thuỳ Dung', 'nữ', '1990-02-26', NULL, '0898973946', NULL, 'thuydung@gmail.com', 'Hà Nội', 11, NULL, NULL),
+(8, 'Trần Văn Nam', 'nam', '1990-05-19', NULL, '0975743987', NULL, 'namtv@gmail.com', 'Ninh Bình', 7, NULL, NULL),
+(9, 'Trần Văn Minh', 'Nữ', '1986-05-19', 'bắc ninh', '0998595349', 435465, 'minhtran@gmail.com', 'Hà Nội', 8, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -280,7 +281,10 @@ INSERT INTO `nhanvien` (`MaNV`, `Hoten`, `GioiTinh`, `NgaySinh`, `DiaChi`, `SoDi
 CREATE TABLE `nhanvien_calam` (
   `Id` bigint(20) NOT NULL,
   `MaNV` bigint(20) NOT NULL,
-  `MaCa` bigint(20) NOT NULL
+  `MaCa` bigint(20) NOT NULL,
+  `date` date NOT NULL,
+  `sogiolamhanhchinh` float DEFAULT NULL,
+  `sogiotangca` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -292,20 +296,20 @@ CREATE TABLE `nhanvien_calam` (
 CREATE TABLE `phongban` (
   `MaPB` bigint(20) NOT NULL,
   `TenPB` varchar(50) NOT NULL,
-  `SoLuongNV` int(11) NOT NULL
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `phongban`
 --
 
-INSERT INTO `phongban` (`MaPB`, `TenPB`, `SoLuongNV`) VALUES
-(1, 'Hành chính - Nhân sự', 8),
-(2, 'Kế toán', 6),
-(3, 'Lễ tân', 5),
-(4, 'Kinh doanh', 10),
-(5, 'Kiểm soát nội bộ', 5),
-(6, 'Vận hành', 5);
+INSERT INTO `phongban` (`MaPB`, `TenPB`, `updated_at`) VALUES
+(1, 'Hành chính - Nhân sự', NULL),
+(2, 'Kế toán', NULL),
+(3, 'Lễ tân', NULL),
+(4, 'Kinh doanh', NULL),
+(5, 'Kiểm soát nội bộ', NULL),
+(6, 'Vận hành', NULL);
 
 --
 -- Indexes for dumped tables
@@ -342,7 +346,9 @@ ALTER TABLE `chucvu`
 --
 ALTER TABLE `dieuchuyennhanvien`
   ADD PRIMARY KEY (`MaPhieu`),
-  ADD KEY `fk_nhanvien_dieuchuyen` (`MaNV`);
+  ADD KEY `fk_nhanvien_dieuchuyen` (`MaNV`),
+  ADD KEY `fk_chucvu1` (`CVHienTai`),
+  ADD KEY `fk_chucvu2` (`CVChuyenDen`);
 
 --
 -- Indexes for table `hopdong`
@@ -412,25 +418,25 @@ ALTER TABLE `bangluong`
 -- AUTO_INCREMENT for table `calam`
 --
 ALTER TABLE `calam`
-  MODIFY `MaCa` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `MaCa` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `chucvu`
 --
 ALTER TABLE `chucvu`
-  MODIFY `MaCV` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `MaCV` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `dieuchuyennhanvien`
 --
 ALTER TABLE `dieuchuyennhanvien`
-  MODIFY `MaPhieu` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `MaPhieu` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `hopdong`
 --
 ALTER TABLE `hopdong`
-  MODIFY `MaHD` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MaHD` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `khenthuongkiluat`
@@ -454,7 +460,7 @@ ALTER TABLE `ngaynghi`
 -- AUTO_INCREMENT for table `nhanvien`
 --
 ALTER TABLE `nhanvien`
-  MODIFY `MaNV` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `MaNV` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `nhanvien_calam`
@@ -466,7 +472,7 @@ ALTER TABLE `nhanvien_calam`
 -- AUTO_INCREMENT for table `phongban`
 --
 ALTER TABLE `phongban`
-  MODIFY `MaPB` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `MaPB` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -488,6 +494,8 @@ ALTER TABLE `chucvu`
 -- Constraints for table `dieuchuyennhanvien`
 --
 ALTER TABLE `dieuchuyennhanvien`
+  ADD CONSTRAINT `fk_chucvu1` FOREIGN KEY (`CVHienTai`) REFERENCES `chucvu` (`MaCV`),
+  ADD CONSTRAINT `fk_chucvu2` FOREIGN KEY (`CVChuyenDen`) REFERENCES `chucvu` (`MaCV`),
   ADD CONSTRAINT `fk_nhanvien_dieuchuyen` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MANV`);
 
 --

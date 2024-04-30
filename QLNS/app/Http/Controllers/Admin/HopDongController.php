@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ChucVu;
-use App\Models\PhongBan;
-use Carbon\Carbon;
+use App\Models\HopDong;
+use App\Models\LoaiHopDong;
+use App\Models\NhanVien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ChucVuController extends Controller
+class HopDongController extends Controller
 {
     public function getIndex()
     {
         $user = Auth::guard('admin')->user();
         if ($user) {
-            $data = ChucVu::with('phongban')->orderBy('MaCV', 'DESC')->paginate(10);
-            return view('Admin.Chucvu.view', compact('data'));
+            $data = HopDong::with('loaihopdong', 'nhanvien')->orderBy('MaHD', 'DESC')->paginate(10);
+            return view('Admin.Hopdong.view', compact('data'));
         }
         return redirect()->route('admin.login.form');
     }
@@ -25,8 +25,10 @@ class ChucVuController extends Controller
     {
         $user = Auth::guard('admin')->user();
         if ($user) {
-            $phongban = PhongBan::get();
-            return view('Admin.Chucvu.add', compact('phongban'));
+            $loaihopdong = LoaiHopDong::get();
+            $nhanvien = NhanVien::get();
+
+            return view('Admin.Hopdong.add', compact('loaihopdong', 'nhanvien'));
         }
         return redirect()->route('admin.login.form');
     }
@@ -34,10 +36,13 @@ class ChucVuController extends Controller
     public function add(Request $request)
     {
         $data = $request->all();
-        $create = ChucVu::create([  // nếu create thât bại sẽ trả về giá trị null
-            'TenCV' => $data['tencv'],
-            'CapBac' => $data['capbac'],
-            'MaPB' => $data['mapb']
+        $create = HopDong::create([  // nếu create thât bại sẽ trả về giá trị null
+            'TenHD' => $request->tenhd,
+            'MaLoaiHD' => $request->loaihd,
+            'NgayKy' => $request->ngayky,
+            'NgayBatDau' => $request->ngaybd,
+            'NgayKetThuc' => $request->ngaykt,
+            'MaNV' => $request->nhanvien
 
         ]);
 
@@ -53,9 +58,11 @@ class ChucVuController extends Controller
     {
         $user = Auth::guard('admin')->user();
         if ($user) {
-            $phongban = PhongBan::get();
-            $data = ChucVu::where('MaCV', $id)->first();
-            return view('Admin.Chucvu.edit', compact('data', 'phongban'));
+
+            $data = HopDong::where('MaHD', $id)->first();
+            $loaihopdong = LoaiHopDong::get();
+            $nhanvien = NhanVien::get();
+            return view('Admin.Hopdong.edit', compact('data', 'loaihopdong', 'nhanvien'));
         }
         return redirect()->route('admin.login.form');
     }
@@ -65,14 +72,16 @@ class ChucVuController extends Controller
 
         $data = $request->all();
 
-        $update = ChucVu::where('MaCV', $id)->update([  // nếu create thât bại sẽ trả về giá trị null
-            'TenCV' => $data['tencv'],
-            'CapBac' => $data['capbac'],
-            'MaPB' => $data['mapb'],
-            'updated_at' => Carbon::now()
+        $update = HopDong::where('MaHD', $id)->update([  // nếu create thât bại sẽ trả về giá trị null
+            'TenHD' => $request->tenhd,
+            'MaLoaiHD' => $request->loaihd,
+            'NgayKy' => $request->ngayky,
+            'NgayBatDau' => $request->ngaybd,
+            'NgayKetThuc' => $request->ngaykt,
+            'MaNV' => $request->nhanvien
         ]);
         if ($update !== null) {
-            return redirect()->route('admin.chucvu.form')->with('success', 'Data has been processed successfully.');
+            return redirect()->route('admin.hopdong.form')->with('success', 'Data has been processed successfully.');
         } else {
             return redirect()->back()->with('error', 'Data processing failed. Please try again.');
         }
@@ -80,7 +89,7 @@ class ChucVuController extends Controller
 
     public function delete($id)
     {
-        $data = ChucVu::where('MaCV', $id)->first();
+        $data = HopDong::where('MaHD', $id)->first();
 
         if ($data) {
             $data->delete();
@@ -97,15 +106,25 @@ class ChucVuController extends Controller
             $keyword = $request->search;
             $searchBy = $request->searchBy;
 
-            $query = ChucVu::query();
+            $query = HopDong::query();
 
             if ($searchBy == '1') {
-                $query->where('MaCV', $keyword);
+                $query->where('MaHD', $keyword);
             } elseif ($searchBy == '2') {
-                $query->where('TenCV', 'like', '%' . $keyword . '%');
+                $query->where('TenHD', 'like', '%' . $keyword . '%');
             } elseif ($searchBy == '3') {
-                $query->whereHas('phongban', function ($query) use ($keyword) {
-                    $query->where('TenPB', 'like', '%' . $keyword . '%');
+                $query->whereHas('loaihopdong', function ($query) use ($keyword) {
+                    $query->where('TenLoaiHD', 'like', '%' . $keyword . '%');
+                });
+            } elseif ($searchBy == '4') {
+                $query->whereDate('NgayKy', $keyword);
+            } elseif ($searchBy == '5') {
+                $query->whereDate('NgayBatDau', $keyword);
+            } elseif ($searchBy == '6') {
+                $query->whereDate('NgayKetThuc', $keyword);
+            } elseif ($searchBy == '7') {
+                $query->whereHas('nhanvien', function ($query) use ($keyword) {
+                    $query->where('Hoten', 'like', '%' . $keyword . '%');
                 });
             }
 
@@ -114,14 +133,15 @@ class ChucVuController extends Controller
 
             if ($data->isEmpty()) {
                 $error = 'Không tìm thấy dữ liệu phù hợp.';
-                return view('Admin.Chucvu.search', compact('error', 'keyword', 'searchBy'));
+                return view('Admin.Hopdong.search', compact('error', 'keyword', 'searchBy'));
             }
 
             // Trả về kết quả tìm kiếm với dữ liệu phân trang
-            return view('Admin.Chucvu.search', compact('data', 'keyword', 'searchBy'));
+            return view('Admin.Hopdong.search', compact('data', 'keyword', 'searchBy'));
         }
         return redirect()->route('admin.login.form');
     }
+
     // public function searchStudent(Request $request)
     // {
     //     $keyword = $request->keyword;

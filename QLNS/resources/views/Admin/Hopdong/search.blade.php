@@ -5,24 +5,26 @@
 
             <div class="col-12">
                 <div class="bg-light rounded h-100 p-4">
-                    <h6 class="mb-4">Nhân Viên</h6>
+                    <h6 class="mb-4">Hợp Đồng</h6>
                     <div class="row">
                         <div class="col-1">
-                            <a class="btn btn-sm btn-primary" href="{{ route('admin.addSnhanvien.form') }}">Add</a>
+                            <a class="btn btn-sm btn-primary" href="{{ route('admin.addhopdong.form') }}">Add</a>
 
                         </div>
                         <div class="col-6"></div>
                         <div class="col-5">
 
-                            <form action="{{ route('admin.searchnhanvien.submit') }}" method="GET"
+                            <form action="{{ route('admin.searchhopdong.submit') }}" method="GET"
                                 class="d-none d-md-flex ms-4 " style="">
                                 <select name="searchBy" id="" class="form-select"
                                     style="float: left; max-width: 100px; margin-right:20px">
-                                    <option value="1" {{ $searchBy == 1 ? 'selected' : '' }}>MaNV</option>
-                                    <option value="2" {{ $searchBy == 2 ? 'selected' : '' }}>Họ tên</option>
-                                    <option value="3" {{ $searchBy == 3 ? 'selected' : '' }}>Địa chỉ</option>
-                                    <option value="4" {{ $searchBy == 4 ? 'selected' : '' }}>Sđt</option>
-                                    <option value="5" {{ $searchBy == 5 ? 'selected' : '' }}>Email</option>
+                                    <option value="1" {{ $searchBy == 1 ? 'selected' : '' }}>Mã HĐ</option>
+                                    <option value="2" {{ $searchBy == 2 ? 'selected' : '' }}>Tên HĐ</option>
+                                    <option value="3" {{ $searchBy == 3 ? 'selected' : '' }}>Loại HĐ</option>
+                                    <option value="4" {{ $searchBy == 4 ? 'selected' : '' }}>Ngày ký</option>
+                                    <option value="5" {{ $searchBy == 5 ? 'selected' : '' }}>Ngày Bắt Đầu</option>
+                                    <option value="6" {{ $searchBy == 6 ? 'selected' : '' }}>Ngày Kết Thúc</option>
+                                    <option value="7" {{ $searchBy == 7 ? 'selected' : '' }}>Nhân Viên</option>
                                 </select>
                                 <input class="form-control border-0" type="search" placeholder="Search" name="search"
                                     required>
@@ -30,7 +32,6 @@
                         </div>
 
                     </div>
-
                     <div class="table-responsive">
                         @if (@isset($error))
                             <p class="error-p">{{ $error }}</p>
@@ -39,16 +40,12 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Họ tên</th>
-                                        <th scope="col">Giới tính</th>
-                                        <th scope="col">Ngày sinh</th>
-                                        <th scope="col">Địa chỉ</th>
-                                        <th scope="col">Sđt</th>
-                                        <th scope="col">Số CCCD</th>
-                                        <th scope="col">Email</th>
-                                        <th scope="col">Quê quán</th>
-                                        <th scope="col">Chức vụ</th>
-                                        <th scope="col">Phòng ban</th>
+                                        <th scope="col">Tên HĐ</th>
+                                        <th scope="col">Loại HĐ</th>
+                                        <th scope="col">Ngày ký</th>
+                                        <th scope="col">Ngày bắt đầu</th>
+                                        <th scope="col">Ngày kết thúc</th>
+                                        <th scope="col">Nhân viên</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
@@ -62,20 +59,16 @@
                                                 echo $i;
                                                 $i++;
                                             @endphp</th>
-                                            <td>{{ $item->Hoten }}</td>
-                                            <td>{{ $item->GioiTinh }}</td>
-                                            <td>{{ $item->NgaySinh }}</td>
-                                            <td>{{ $item->DiaChi }}</td>
-                                            <td>{{ $item->SoDienThoai }}</td>
-                                            <td>{{ $item->SoCCCD }}</td>
-                                            <td>{{ $item->Email }}</td>
-                                            <td>{{ $item->QueQuan }}</td>
-                                            <td>{{ $item->chucvu->TenCV }}</td>
-                                            <td>{{ $item->chucvu->phongban->TenPB }}</td>
+                                            <td>{{ $item->TenHD }}</td>
+                                            <td>{{ $item->loaihopdong->TenLoaiHD }}</td>
+                                            <td>{{ $item->NgayKy }}</td>
+                                            <td>{{ $item->NgayBatDau }}</td>
+                                            <td>{{ $item->NgayKetThuc }}</td>
+                                            <td>{{ $item->nhanvien->Hoten }}</td>
                                             <td><a class="btn btn-sm btn-primary"
-                                                    href="{{ route('admin.updatenhanvien.form', ['MaNV' => $item->MaNV]) }}">Edit</a>
+                                                    href="{{ route('admin.updatehopdong.form', ['MaHD' => $item->MaHD]) }}">Edit</a>
                                                 <a class="btn btn-sm btn-danger mt-1"
-                                                    href="{{ route('admin.deletenhanvien', ['MaNV' => $item->MaNV]) }}">Delete</a>
+                                                    href="{{ route('admin.deletehopdong', ['MaHD' => $item->MaHD]) }}">Delete</a>
                                             </td>
 
                                         </tr>
@@ -87,6 +80,7 @@
                                 {{ $data->appends(['search' => $keyword, 'searchBy' => $searchBy])->links() }}
                             </div>
                         @endif
+
                     </div>
                 </div>
             </div>

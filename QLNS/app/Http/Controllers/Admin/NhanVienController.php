@@ -8,28 +8,36 @@ use App\Models\HopDong;
 use App\Models\NhanVien;
 use App\Models\PhongBan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use SebastianBergmann\Diff\Chunk;
 
 class NhanVienController extends Controller
 {
     public function getIndex()
     {
-        $data = NhanVien::with('chucvu')->orderBy('MaNV', 'DESC')->paginate(10);
-        return view('Admin.Nhanvien.view', compact('data'));
+        $user = Auth::guard('admin')->user();
+        if ($user) {
+            $data = NhanVien::with('chucvu')->orderBy('MaNV', 'DESC')->paginate(10);
+            return view('Admin.Nhanvien.view', compact('data'));
+        }
+        return redirect()->route('admin.login.form');
     }
 
     public function formAdd()
     {
-        $phongban = PhongBan::get();
-        $chucvu = ChucVu::get();
-
-        return view('Admin.Nhanvien.add', compact('phongban', 'chucvu'));
+        $user = Auth::guard('admin')->user();
+        if ($user) {
+            $phongban = PhongBan::get();
+            $chucvu = ChucVu::get();
+            return view('Admin.Nhanvien.add', compact('phongban', 'chucvu'));
+        }
+        return redirect()->route('admin.login.form');
     }
 
     public function add(Request $request)
     {
         $data = $request->all();
-        $nhanvien = NhanVien::create([  // nếu create thât bại sẽ trả về giá trị null
+        $create = NhanVien::create([  // nếu create thât bại sẽ trả về giá trị null
             'Hoten' => $data['hoten'],
             'GioiTinh' => $data['gioitinh'],
             'NgaySinh' => $data['ngaysinh'],
@@ -43,7 +51,7 @@ class NhanVienController extends Controller
 
         ]);
 
-        if ($nhanvien !== null) { // laravel sẽ tự chuyển đổi thành true/false nên có thể dùng if($student)
+        if ($create !== null) { // laravel sẽ tự chuyển đổi thành true/false nên có thể dùng if($student)
 
             return redirect()->back()->with('success', 'Data has been processed successfully.');
         } else {
@@ -53,10 +61,14 @@ class NhanVienController extends Controller
 
     public function formUpdate($id)
     {
-        $data = NhanVien::where('MaNV', $id)->first();
-        $phongban = PhongBan::get();
-        $chucvu = ChucVu::get();
-        return view('Admin.Nhanvien.edit', compact('data', 'phongban', 'chucvu'));
+        $user = Auth::guard('admin')->user();
+        if ($user) {
+            $data = NhanVien::where('MaNV', $id)->first();
+            $phongban = PhongBan::get();
+            $chucvu = ChucVu::get();
+            return view('Admin.Nhanvien.edit', compact('data', 'phongban', 'chucvu'));
+        }
+        return redirect()->route('admin.login.form');
     }
 
     public function update(Request $request, $id)
@@ -64,7 +76,7 @@ class NhanVienController extends Controller
 
         $data = $request->all();
 
-        $nhanvien = NhanVien::where('MaNV', $id)->update([  // nếu create thât bại sẽ trả về giá trị null
+        $update = NhanVien::where('MaNV', $id)->update([  // nếu create thât bại sẽ trả về giá trị null
             'Hoten' => $data['hoten'],
             'GioiTinh' => $data['gioitinh'],
             'NgaySinh' => $data['ngaysinh'],
@@ -77,7 +89,7 @@ class NhanVienController extends Controller
             'MaCV' => $data['macv']
 
         ]);
-        if ($nhanvien !== null) {
+        if ($update !== null) {
             return redirect()->route('admin.nhanvien.form')->with('success', 'Data has been processed successfully.');
         } else {
             return redirect()->back()->with('error', 'Data processing failed. Please try again.');
@@ -86,10 +98,10 @@ class NhanVienController extends Controller
 
     public function delete($id)
     {
-        $nhanvien = NhanVien::where('MaNV', $id)->first();
+        $data = NhanVien::where('MaNV', $id)->first();
 
-        if ($nhanvien) {
-            $nhanvien->delete();
+        if ($data) {
+            $data->delete();
             return redirect()->back()->with('success', 'Deleted successfully');
         } else {
             return redirect()->back()->with('error', 'Failed to delete data');
@@ -98,32 +110,36 @@ class NhanVienController extends Controller
 
     public function search(Request $request)
     {
-        $keyword = $request->search;
-        $searchBy = $request->searchBy;
+        $user = Auth::guard('admin')->user();
+        if ($user) {
+            $keyword = $request->search;
+            $searchBy = $request->searchBy;
 
-        $query = NhanVien::query();
+            $query = NhanVien::query();
 
-        if ($searchBy == '1') {
-            $query->where('MaNV', $keyword);
-        } elseif ($searchBy == '2') {
-            $query->where('Hoten', 'like', '%' . $keyword . '%');
-        } elseif ($searchBy == '3') {
-            $query->where('DiaChi', 'like', '%' . $keyword . '%');
-        } elseif ($searchBy == '4') {
-            $query->where('SoDienThoai', 'like', '%' . $keyword . '%');
-        } else {
-            $query->where('Email', 'like', '%' . $keyword . '%');
+            if ($searchBy == '1') {
+                $query->where('MaNV', $keyword);
+            } elseif ($searchBy == '2') {
+                $query->where('Hoten', 'like', '%' . $keyword . '%');
+            } elseif ($searchBy == '3') {
+                $query->where('DiaChi', 'like', '%' . $keyword . '%');
+            } elseif ($searchBy == '4') {
+                $query->where('SoDienThoai', $keyword);
+            } else {
+                $query->where('Email', 'like', '%' . $keyword . '%');
+            }
+
+            $data = $query->paginate(5);
+
+            if ($data->isEmpty()) {
+                $error = 'Không tìm thấy dữ liệu phù hợp.';
+                return view('Admin.Nhanvien.search', compact('error', 'keyword', 'searchBy'));
+            }
+
+            // Trả về kết quả tìm kiếm
+            return view('Admin.Nhanvien.search', compact('data', 'keyword', 'searchBy'));
         }
-
-        $data = $query->paginate(5);
-
-        if ($data->isEmpty()) {
-            $error = 'Không tìm thấy dữ liệu phù hợp.';
-            return view('Admin.Nhanvien.search', compact('error', 'keyword'));
-        }
-
-        // Trả về kết quả tìm kiếm
-        return view('Admin.Nhanvien.search', compact('data', 'keyword'));
+        return redirect()->route('admin.login.form');
     }
 
     // public function exportStudents()

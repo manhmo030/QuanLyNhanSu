@@ -12,17 +12,20 @@
 
                         </div>
                         <div class="col-6"></div>
-                        <div class="col-5" >
+                        <div class="col-5">
 
-                            <form action="{{ route('admin.searchnhanvien.submit') }}" method="GET" class="d-none d-md-flex ms-4 " style="">
-                                <select name="searchBy" id="" class="form-select" style="float: left; max-width: 100px; margin-right:20px">
+                            <form action="{{ route('admin.searchnhanvien.submit') }}" method="GET"
+                                class="d-none d-md-flex ms-4 " style="">
+                                <select name="searchBy" id="" class="form-select"
+                                    style="float: left; max-width: 100px; margin-right:20px">
                                     <option value="1">MaNV</option>
                                     <option value="2">Họ tên</option>
                                     <option value="3">Địa chỉ</option>
                                     <option value="4">Sđt</option>
                                     <option value="5">Email</option>
                                 </select>
-                                <input class="form-control border-0" type="search" placeholder="Search" name="search" required>
+                                <input class="form-control border-0" type="search" placeholder="Search" name="search"
+                                    required>
                             </form>
                         </div>
 
@@ -77,6 +80,10 @@
 
                             </tbody>
                         </table>
+                        <div>
+                            {{ $data->links() }}
+                        </div>
+
                     </div>
                 </div>
             </div>

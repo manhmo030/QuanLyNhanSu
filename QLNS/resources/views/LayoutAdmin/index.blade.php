@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,11 +32,12 @@
 </head>
 
 <body>
-            @include('LayoutAdmin.header')
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    @include('LayoutAdmin.header')
 
-            @yield('admin_content')
+    @yield('admin_content')
 
-            @include('LayoutAdmin.footer')
+    @include('LayoutAdmin.footer')
 
 
     <!-- JavaScript Libraries -->
@@ -53,6 +53,16 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('assetAdmin/js/main.js') }}"></script>
+    {{-- Toast --}}
+    @if (session('success'))
+        <input type="hidden" id="inputToastSuccess" value="{{ session('success') }}">
+    @endif
+    @if (session('error'))
+        <input type="hidden" id="inputToastError" value="{{ session('error') }}">
+    @endif
+
+    <script src="{{ asset('assetAdmin/js/toast.js') }}"></script>
+    <div id="toast__hong"></div>
 </body>
 
 </html>

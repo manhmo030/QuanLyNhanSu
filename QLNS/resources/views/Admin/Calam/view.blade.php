@@ -5,27 +5,27 @@
 
             <div class="col-12">
                 <div class="bg-light rounded h-100 p-4">
-                    <h6 class="mb-4">Chức Vụ</h6>
+                    <h6 class="mb-4">Ca Làm</h6>
                     <div class="row">
                         <div class="col-1">
-                            <a class="btn btn-sm btn-primary" href="{{ route('admin.addchucvu.form') }}">Add</a>
+                            <a class="btn btn-sm btn-primary" href="{{ route('admin.addcalam.form') }}">Add</a>
 
                         </div>
                         <div class="col-6"></div>
                         <div class="col-5">
 
-                            <form action="{{ route('admin.searchchucvu.submit') }}" method="GET"
+                            {{-- <form action="{{ route('admin.searchphongban.submit') }}" method="GET"
                                 class="d-none d-md-flex ms-4 " style="">
                                 <select name="searchBy" id="" class="form-select"
                                     style="float: left; max-width: 100px; margin-right:20px">
-                                    <option value="1">MaCV</option>
-                                    <option value="2">Tên CV</option>
-                                    <option value="3">Phòng Ban</option>
+                                    <option value="1">MaPB</option>
+                                    <option value="2">Tên PB</option>
+
 
                                 </select>
                                 <input class="form-control border-0" type="search" placeholder="Search" name="search"
                                     required>
-                            </form>
+                            </form> --}}
                         </div>
 
                     </div>
@@ -34,10 +34,11 @@
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Tên chức vụ</th>
-                                    <th scope="col">Cấp bậc</th>
-                                    <th scope="col">Phòng ban</th>
-                                    <th scope="col">Update</th>
+                                    <th scope="col">Tên ca</th>
+                                    <th scope="col">Loại ca</th>
+                                    <th scope="col">Giờ bắt đầu</th>
+                                    <th scope="col">Giờ kết thúc</th>
+                                    <th scope="col">Số giờ làm việc</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -51,14 +52,15 @@
                                             echo $i;
                                             $i++;
                                         @endphp</th>
-                                        <td>{{ $item->TenCV }}</td>
-                                        <td>{{ $item->CapBac }}</td>
-                                        <td>{{ $item->phongban->TenPB }}</td>
-                                        <td>{{ $item->updated_at }}</td>
+                                        <td>{{ $item->TenCa }}</td>
+                                        <td>{{ $item->LoaiCa }}</td>
+                                        <td>{{ $item->GioBatDau }}</td>
+                                        <td>{{ $item->GioKetThuc }}</td>
+                                        <td>{{ $item->SoGioLamViec }}</td>
                                         <td><a class="btn btn-sm btn-primary"
-                                                href="{{ route('admin.updatechucvu.form', ['MaCV' => $item->MaCV]) }}">Edit</a>
+                                                href="{{ route('admin.updatecalam.form', ['MaCa' => $item->MaCa]) }}">Edit</a>
                                             <a class="btn btn-sm btn-danger mt-1"
-                                                href="{{ route('admin.deletechucvu', ['MaCV' => $item->MaCV]) }}">Delete</a>
+                                                href="{{ route('admin.deletecalam', ['MaCa' => $item->MaCa]) }}">Delete</a>
                                         </td>
 
                                     </tr>

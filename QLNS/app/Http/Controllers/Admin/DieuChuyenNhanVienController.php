@@ -4,19 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ChucVu;
+use App\Models\DieuChuyenNhanVien;
+use App\Models\NhanVien;
 use App\Models\PhongBan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ChucVuController extends Controller
+class DieuChuyenNhanVienController extends Controller
 {
     public function getIndex()
     {
         $user = Auth::guard('admin')->user();
         if ($user) {
-            $data = ChucVu::with('phongban')->orderBy('MaCV', 'DESC')->paginate(10);
-            return view('Admin.Chucvu.view', compact('data'));
+            $data = DieuChuyenNhanVien::with('phongban1', 'phongban2', 'nhanvien', 'chucvu1', 'chucvu2')->orderBy('MaPhieu', 'DESC')->paginate(10);
+            return view('Admin.Dieuchuyennv.view', compact('data'));
         }
         return redirect()->route('admin.login.form');
     }
@@ -26,7 +28,9 @@ class ChucVuController extends Controller
         $user = Auth::guard('admin')->user();
         if ($user) {
             $phongban = PhongBan::get();
-            return view('Admin.Chucvu.add', compact('phongban'));
+            $nhanvien = NhanVien::get();
+            $chucvu = ChucVu::get();
+            return view('Admin.Dieuchuyennv.add', compact('phongban', 'nhanvien', 'chucvu'));
         }
         return redirect()->route('admin.login.form');
     }
@@ -34,10 +38,17 @@ class ChucVuController extends Controller
     public function add(Request $request)
     {
         $data = $request->all();
-        $create = ChucVu::create([  // nếu create thât bại sẽ trả về giá trị null
-            'TenCV' => $data['tencv'],
-            'CapBac' => $data['capbac'],
-            'MaPB' => $data['mapb']
+        $create = DieuChuyenNhanVien::create([  // nếu create thât bại sẽ trả về giá trị null
+            'TenPhieu' => $request->tenphieu,
+            'MaNV' => $request->nhanvien,
+            // 'PBHienTai' => $request->pbht,
+            // 'PBChuyenDen' => $request->pbcd,
+            'CVHienTai' => $request->cvht,
+            'CVChuyenDen' => $request->cvcd,
+            'NgayKT' => $request->ngaykt,
+            'NgayBD' => $request->ngaybd,
+            // 'NgayDuyet' => $request->ngayduyet,
+            'TrangThai' => 'Đang Chờ'
 
         ]);
 
@@ -53,9 +64,12 @@ class ChucVuController extends Controller
     {
         $user = Auth::guard('admin')->user();
         if ($user) {
+
+            $data = DieuChuyenNhanVien::where('MaPhieu', $id)->first();
             $phongban = PhongBan::get();
-            $data = ChucVu::where('MaCV', $id)->first();
-            return view('Admin.Chucvu.edit', compact('data', 'phongban'));
+            $nhanvien = NhanVien::get();
+            $chucvu = ChucVu::with('phongban')->get();
+            return view('Admin.Dieuchuyennv.edit', compact('data', 'phongban', 'nhanvien', 'chucvu'));
         }
         return redirect()->route('admin.login.form');
     }
@@ -64,15 +78,25 @@ class ChucVuController extends Controller
     {
 
         $data = $request->all();
-
-        $update = ChucVu::where('MaCV', $id)->update([  // nếu create thât bại sẽ trả về giá trị null
-            'TenCV' => $data['tencv'],
-            'CapBac' => $data['capbac'],
-            'MaPB' => $data['mapb'],
-            'updated_at' => Carbon::now()
+        $item = DieuChuyenNhanVien::where('MaPhieu', $id)->first();
+        $ngayduyet = null;
+        if ($item->TrangThai != $request->trangthai) {
+            $ngayduyet = Carbon::now();
+        }
+        $update = DieuChuyenNhanVien::where('MaPhieu', $id)->update([  // nếu create thât bại sẽ trả về giá trị null
+            'TenPhieu' => $request->tenphieu,
+            'MaNV' => $request->nhanvien,
+            // 'PBHienTai' => $request->pbht,
+            // 'PBChuyenDen' => $request->pbcd,
+            'CVHienTai' => $request->cvht,
+            'CVChuyenDen' => $request->cvcd,
+            'NgayKT' => $request->ngaykt,
+            'NgayBD' => $request->ngaybd,
+            'NgayDuyet' => $ngayduyet,
+            'TrangThai' => $request->trangthai
         ]);
         if ($update !== null) {
-            return redirect()->route('admin.chucvu.form')->with('success', 'Data has been processed successfully.');
+            return redirect()->route('admin.dieuchuyennv.form')->with('success', 'Data has been processed successfully.');
         } else {
             return redirect()->back()->with('error', 'Data processing failed. Please try again.');
         }
@@ -80,7 +104,7 @@ class ChucVuController extends Controller
 
     public function delete($id)
     {
-        $data = ChucVu::where('MaCV', $id)->first();
+        $data = DieuChuyenNhanVien::where('MaPhieu', $id)->first();
 
         if ($data) {
             $data->delete();
@@ -97,16 +121,22 @@ class ChucVuController extends Controller
             $keyword = $request->search;
             $searchBy = $request->searchBy;
 
-            $query = ChucVu::query();
+            $query = DieuChuyenNhanVien::query();
 
             if ($searchBy == '1') {
-                $query->where('MaCV', $keyword);
+                $query->where('TenPhieu', 'like', '%' . $keyword . '%');
             } elseif ($searchBy == '2') {
-                $query->where('TenCV', 'like', '%' . $keyword . '%');
-            } elseif ($searchBy == '3') {
-                $query->whereHas('phongban', function ($query) use ($keyword) {
-                    $query->where('TenPB', 'like', '%' . $keyword . '%');
+                $query->whereHas('nhanvien', function ($query) use ($keyword) {
+                    $query->where('Hoten', 'like', '%' . $keyword . '%');
                 });
+            } elseif ($searchBy == '3') {
+                $query->whereDate('NgayBD', $keyword);
+            } elseif ($searchBy == '4') {
+                $query->whereDate('NgayKT', $keyword);
+            } elseif ($searchBy == '5') {
+                $query->whereDate('NgayDuyet', $keyword);
+            } elseif ($searchBy == '6') {
+                $query->where('TrangThai', 'like', '%' . $keyword . '%');
             }
 
             // Phân trang
@@ -114,14 +144,15 @@ class ChucVuController extends Controller
 
             if ($data->isEmpty()) {
                 $error = 'Không tìm thấy dữ liệu phù hợp.';
-                return view('Admin.Chucvu.search', compact('error', 'keyword', 'searchBy'));
+                return view('Admin.Dieuchuyennv.search', compact('error', 'keyword', 'searchBy'));
             }
 
             // Trả về kết quả tìm kiếm với dữ liệu phân trang
-            return view('Admin.Chucvu.search', compact('data', 'keyword', 'searchBy'));
+            return view('Admin.Dieuchuyennv.search', compact('data', 'keyword', 'searchBy'));
         }
         return redirect()->route('admin.login.form');
     }
+
     // public function searchStudent(Request $request)
     // {
     //     $keyword = $request->keyword;

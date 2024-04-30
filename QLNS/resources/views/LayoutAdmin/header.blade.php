@@ -10,21 +10,58 @@
 
 
     <!-- Sidebar Start -->
-    <div class="sidebar pe-4 pb-3">
+    <div class="sidebar pe-4 pb-3" style="width:300px">
         <nav class="navbar bg-light navbar-light">
             <a href="index.html" class="navbar-brand mx-4 mb-3">
                 <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>DASHMIN</h3>
             </a>
             <div class="d-flex align-items-center ms-4 mb-4">
                 <div class="position-relative">
-                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                    @if (Auth::guard('admin')->check())
+                        <?php
+
+                        $MaNV = Auth::guard('admin')->user()->MaNV;
+                        $nhanvien = App\Models\NhanVien::where('MaNV', $MaNV)->first();
+                        $admin_avatar = $nhanvien->anh;
+                        ?>
+                        @if ($admin_avatar !== null)
+                            <img class="rounded-circle me-lg-2" src="{{ asset('assetAdmin/img/' . $admin_avatar) }}"
+                                alt="" style="width: 40px; height: 40px;">
+                        @endif
+                    @endif
                     <div
                         class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1">
                     </div>
                 </div>
                 <div class="ms-3">
-                    <h6 class="mb-0">Jhon Doe</h6>
-                    <span>Admin</span>
+                    <h6 class="mb-0">
+                        @if (Auth::guard('admin')->check())
+                            <?php
+
+                            $MaNV = Auth::guard('admin')->user()->MaNV;
+                            $nhanvien = App\Models\NhanVien::where('MaNV', $MaNV)->first();
+                            $admin_name = $nhanvien->Hoten;
+                            ?>
+                            @if ($admin_name !== null)
+                                {{ $admin_name }}
+                            @endif
+                        @endif
+                    </h6>
+                    <span>
+                        @if (Auth::guard('admin')->check())
+                        <?php
+
+                        $MaNV = Auth::guard('admin')->user()->MaNV;
+                        $nhanvien = App\Models\NhanVien::where('MaNV', $MaNV)->first();
+                        $MaCV = $nhanvien->MaCV;
+                        $chucvu = App\Models\ChucVu::where('MaCV', $MaCV)->first();
+
+                        ?>
+                        @if ($chucvu !== null)
+                            {{ $chucvu->TenCV }}
+                        @endif
+                    @endif
+                    </span>
                 </div>
             </div>
             <div class="navbar-nav w-100">
@@ -39,8 +76,21 @@
                         <a href="element.html" class="dropdown-item">Other Elements</a>
                     </div>
                 </div> --}}
-                <a href="{{ route('admin.nhanvien.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Nhân Viên</a>
-                <a href="{{ route('admin.chucvu.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Chức Vụ</a>
+                <a href="{{ route('admin.nhanvien.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Nhân
+                    Viên</a>
+                <a href="{{ route('admin.chucvu.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Chức
+                    Vụ</a>
+                <a href="{{ route('admin.phongban.form') }}" class="nav-item nav-link"><i
+                        class="fa fa-th me-2"></i>Phòng Ban</a>
+                <a href="{{ route('admin.calam.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Ca
+                    Làm</a>
+                <a href="{{ route('admin.hopdong.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Hợp
+                    Đồng</a>
+                <a href="{{ route('admin.dieuchuyennv.form') }}" class="nav-item nav-link"><i
+                        class="fa fa-th me-2"></i>Điều Chuyển NV</a>
+                <a href="{{ route('admin.chucvu.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>DS
+                    Chấm Công</a>
+
 
                 <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
                 <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
@@ -141,19 +191,32 @@
                 </div>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                        <img class="rounded-circle me-lg-2"
-                            @if (Auth::guard('admin')->check()) <?php $admin_avatar = Auth::guard('admin')->user()->avatar; ?>
-                        @if ($admin_avatar !== null)
-                            src="{{ $admin_avatar }}" @endif
-                            @endif alt=""
-                        style="width: 40px; height: 40px;">
+                        @if (Auth::guard('admin')->check())
+                            <?php
+
+                            $MaNV = Auth::guard('admin')->user()->MaNV;
+                            $nhanvien = App\Models\NhanVien::where('MaNV', $MaNV)->first();
+                            $admin_avatar = $nhanvien->anh;
+                            ?>
+                            @if ($admin_avatar !== null)
+                                <img class="rounded-circle me-lg-2"
+                                    src="{{ asset('assetAdmin/img/' . $admin_avatar) }}" alt=""
+                                    style="width: 40px; height: 40px;">
+                            @endif
+                        @endif
+
                         <span class="d-none d-lg-inline-flex">
-                            @php
-                                $admin_name = Auth::guard('admin')->user()->name;
-                                if ($admin_name !== null) {
-                                    echo $admin_name;
-                                }
-                            @endphp
+                            @if (Auth::guard('admin')->check())
+                                <?php
+
+                                $MaNV = Auth::guard('admin')->user()->MaNV;
+                                $nhanvien = App\Models\NhanVien::where('MaNV', $MaNV)->first();
+                                $admin_name = $nhanvien->Hoten;
+                                ?>
+                                @if ($admin_name !== null)
+                                    {{ $admin_name }}
+                                @endif
+                            @endif
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">

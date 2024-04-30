@@ -9,7 +9,15 @@ class HopDong extends Model
 {
     use HasFactory;
     protected $table = 'hopdong';
-
+    protected $primaryKey = 'MaHD';
     public $timestamps = false;
-    // protected $fillable = ['email', 'password', 'name', 'phone', 'avatar'];
+    protected $fillable = ['TenHD', 'MaLoaiHD', 'NgayKy', 'NgayBatDau', 'NgayKetThuc', 'MaNV'];
+
+    public function loaihopdong(){
+        return $this->hasOne(LoaiHopDong::class, 'MaLoaiHD', 'MaLoaiHD');
+    }
+
+    public function nhanvien(){
+        return $this->hasOne(NhanVien::class, 'MaNV', 'MaNV');
+    }
 }

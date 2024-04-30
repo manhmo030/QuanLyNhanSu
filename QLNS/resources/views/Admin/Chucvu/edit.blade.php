@@ -10,12 +10,25 @@
 
                         <h6 class="mb-4"><a href="{{ route('admin.chucvu.form') }}">Back</a></h6>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="floatingInput" name="tencv" value="{{ $data->TenCV }}" required>
+                            <input type="text" class="form-control" id="floatingInput" name="tencv"
+                                value="{{ $data->TenCV }}" required>
                             <label for="floatingInput">Tên Chức Vụ</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="floatingInput" name="capbac" value="{{ $data->CapBac }}" required>
+                            <input type="number" class="form-control" id="floatingInput" name="capbac"
+                                value="{{ $data->CapBac }}" required>
                             <label for="floatingInput">Cấp Bậc</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"
+                                name="mapb">
+                                <option value=""></option>
+                                @foreach ($phongban as $item)
+                                    <option value="{{ $item->MaPB }}" {{ $item->MaPB == $data->MaPB ? 'selected' : '' }}>
+                                        {{ $item->TenPB }}</option>
+                                @endforeach
+                            </select>
+                            <label for="floatingSelect">Phòng Ban</label>
                         </div>
 
 
