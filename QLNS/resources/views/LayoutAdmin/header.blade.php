@@ -88,8 +88,7 @@
                     Đồng</a>
                 <a href="{{ route('admin.dieuchuyennv.form') }}" class="nav-item nav-link"><i
                         class="fa fa-th me-2"></i>Điều Chuyển NV</a>
-                <a href="{{ route('admin.chucvu.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>DS
-                    Chấm Công</a>
+                <a href="{{ route('admin.dkcalam.form') }}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>ĐK Ca Làm</a>
 
 
                 <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>

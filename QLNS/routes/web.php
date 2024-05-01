@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CaLamController;
 use App\Http\Controllers\Admin\ChucVuController;
+use App\Http\Controllers\Admin\DangKyCaLamController;
 use App\Http\Controllers\Admin\DieuChuyenNhanVienController;
 use App\Http\Controllers\Admin\HopDongController;
 use App\Http\Controllers\Admin\LoginAdminController;
@@ -114,6 +115,22 @@ Route::prefix('admin')->group(function () {
         Route::post('/import', [DieuChuyenNhanVienController::class, 'import'])->name('admin.importdieuchuyennv.submit');
         Route::get('/template', [DieuChuyenNhanVienController::class, 'teamplateExport'])->name('admin.templateExportdieuchuyennv.submit');
         Route::get('/delete/{MaPhieu}', [DieuChuyenNhanVienController::class, 'delete'])->name('admin.deletedieuchuyennv');
+        // });
+    });
+
+    Route::prefix('dk-ca-lam')->group(function () {
+        Route::get('/', [DangKyCaLamController::class, 'getIndex'])->name('admin.dkcalam.form');
+        Route::get('/search', [DangKyCaLamController::class, 'search'])->name('admin.searchdkcalam.submit');
+        // Route::middleware(AccessPermission::class . ':Admin,Editor')->group(function () {
+        Route::get('/add', [DangKyCaLamController::class, 'formAdd'])->name('admin.adddkcalam.form');
+        Route::post('/add', [DangKyCaLamController::class, 'add'])->name('admin.adddkcalam.submit');
+        Route::get('/update/{Id}', [DangKyCaLamController::class, 'formUpdate'])->name('admin.updatedkcalam.form');
+        Route::post('/update/{Id}', [DangKyCaLamController::class, 'update'])->name('admin.updatedkcalam.submit');
+        Route::get('/export', [DangKyCaLamController::class, 'export'])->name('admin.exportdkcalam.submit');
+        Route::get('/import', [DangKyCaLamController::class, 'formImport'])->name('admin.importdkcalam.form');
+        Route::post('/import', [DangKyCaLamController::class, 'import'])->name('admin.importdkcalam.submit');
+        Route::get('/template', [DangKyCaLamController::class, 'teamplateExport'])->name('admin.templateExportdkcalam.submit');
+        Route::get('/delete/{Id}', [DangKyCaLamController::class, 'delete'])->name('admin.deletedkcalam');
         // });
     });
 });
