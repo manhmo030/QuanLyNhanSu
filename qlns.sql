@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 30, 2024 at 11:31 AM
+-- Generation Time: May 02, 2024 at 10:49 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -284,8 +284,24 @@ CREATE TABLE `nhanvien_calam` (
   `MaCa` bigint(20) NOT NULL,
   `date` date NOT NULL,
   `sogiolamhanhchinh` float DEFAULT NULL,
-  `sogiotangca` float DEFAULT NULL
+  `sogiotangca` float DEFAULT NULL,
+  `dilam` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `nhanvien_calam`
+--
+
+INSERT INTO `nhanvien_calam` (`Id`, `MaNV`, `MaCa`, `date`, `sogiolamhanhchinh`, `sogiotangca`, `dilam`) VALUES
+(3, 4, 3, '2024-05-02', NULL, NULL, NULL),
+(5, 7, 3, '2024-05-01', NULL, NULL, NULL),
+(6, 3, 2, '2024-05-02', NULL, NULL, NULL),
+(7, 5, 2, '2024-05-02', NULL, NULL, NULL),
+(8, 8, 2, '2024-05-02', NULL, NULL, NULL),
+(9, 2, 4, '2024-05-02', NULL, NULL, NULL),
+(10, 5, 4, '2024-05-02', NULL, NULL, NULL),
+(11, 1, 1, '2024-05-02', NULL, NULL, NULL),
+(12, 8, 1, '2024-05-02', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -466,7 +482,7 @@ ALTER TABLE `nhanvien`
 -- AUTO_INCREMENT for table `nhanvien_calam`
 --
 ALTER TABLE `nhanvien_calam`
-  MODIFY `Id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `phongban`
@@ -482,7 +498,7 @@ ALTER TABLE `phongban`
 -- Constraints for table `bangluong`
 --
 ALTER TABLE `bangluong`
-  ADD CONSTRAINT `fk_nhanvien_luong` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MANV`);
+  ADD CONSTRAINT `fk_nhanvien_luong` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MaNV`);
 
 --
 -- Constraints for table `chucvu`
@@ -496,7 +512,7 @@ ALTER TABLE `chucvu`
 ALTER TABLE `dieuchuyennhanvien`
   ADD CONSTRAINT `fk_chucvu1` FOREIGN KEY (`CVHienTai`) REFERENCES `chucvu` (`MaCV`),
   ADD CONSTRAINT `fk_chucvu2` FOREIGN KEY (`CVChuyenDen`) REFERENCES `chucvu` (`MaCV`),
-  ADD CONSTRAINT `fk_nhanvien_dieuchuyen` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MANV`);
+  ADD CONSTRAINT `fk_nhanvien_dieuchuyen` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MaNV`);
 
 --
 -- Constraints for table `hopdong`
@@ -509,7 +525,7 @@ ALTER TABLE `hopdong`
 -- Constraints for table `khenthuongkiluat`
 --
 ALTER TABLE `khenthuongkiluat`
-  ADD CONSTRAINT `fk_nhanvien_ktkl` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MANV`);
+  ADD CONSTRAINT `fk_nhanvien_ktkl` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MaNV`);
 
 --
 -- Constraints for table `nhanvien`
@@ -522,7 +538,7 @@ ALTER TABLE `nhanvien`
 --
 ALTER TABLE `nhanvien_calam`
   ADD CONSTRAINT `fk_calam` FOREIGN KEY (`MaCa`) REFERENCES `calam` (`MaCa`),
-  ADD CONSTRAINT `fk_nhanvien` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MANV`);
+  ADD CONSTRAINT `fk_nhanvien` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MaNV`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

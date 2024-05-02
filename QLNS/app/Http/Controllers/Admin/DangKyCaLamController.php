@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DangKyCaLamController extends Controller
 {
@@ -32,31 +33,36 @@ class DangKyCaLamController extends Controller
         return redirect()->route('admin.login.form');
     }
 
-    public function formAdd()
+    public function formAdd(Request $request)
     {
+        $date = $request->input('date', Carbon::now()->toDateString());
         $user = Auth::guard('admin')->user();
         if ($user) {
             $nhanvien = NhanVien::get();
-            return view('Admin.DKcalam.add', compact('nhanvien'));
+            return view('Admin.DKcalam.add', compact('nhanvien', 'date'));
         }
         return redirect()->route('admin.login.form');
     }
 
     public function add(Request $request)
     {
-        $data = $request->all();
-        $create = DangKyCaLam::create([  // nếu create thât bại sẽ trả về giá trị null
-            'MaNV' => $request->nhanvien,
-            'MaCa'=> $request->calam,
-            'date'=> $request->date
-        ]);
-
-        if ($create !== null) { // laravel sẽ tự chuyển đổi thành true/false nên có thể dùng if($student)
-
-            return redirect()->back()->with('success', 'Data has been processed successfully.');
-        } else {
-            return redirect()->back()->with('error', 'Data processing failed. Please try again.');
+        $nhanviens = $request->input('nhanvien');
+        DB::beginTransaction();
+        foreach ($nhanviens as $nhanvien) {
+            $dkcalam = DangKyCaLam::where('MaNV', $nhanvien)->where('MaCa', $request->calam)->where('date', $request->date)->first();
+            if ($dkcalam !== null) {
+                DB::rollback();
+                return redirect()->back()->with('error', 'Trùng lịch');
+            }
+            DangKyCaLam::create([
+                'MaNV' => $nhanvien,
+                'MaCa' => $request->calam,
+                'date' => $request->date
+            ]);
         }
+        // if ($create !== null) { // laravel sẽ tự chuyển đổi thành true/false nên có thể dùng if($student)
+        DB::commit();
+        return redirect()->back()->with('success', 'Data has been processed successfully.');
     }
 
     public function formUpdate($id)
@@ -77,7 +83,7 @@ class DangKyCaLamController extends Controller
 
         $update = DangKyCaLam::where('Id', $id)->update([  // nếu create thât bại sẽ trả về giá trị null
 
-            'MaCa'=> $request->calam
+            'MaCa' => $request->calam
 
         ]);
         if ($update !== null) {
@@ -99,6 +105,16 @@ class DangKyCaLamController extends Controller
         }
     }
 
+    public function formchamcong($id){
+        $user = Auth::guard('admin')->user();
+        if ($user) {
+
+            $data = DangKyCaLam::with('nhanvien')->where('Id', $id)->first();
+
+            return view('Admin.DKcalam.chamcong', compact('data'));
+        }
+        return redirect()->route('admin.login.form');
+    }
     // public function search(Request $request)
     // {
     //     $user = Auth::guard('admin')->user();

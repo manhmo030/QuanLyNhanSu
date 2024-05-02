@@ -17,4 +17,8 @@ class DangKyCaLam extends Model
     public function nhanvien(){
         return $this->hasOne(NhanVien::class, 'MaNV', 'MaNV');
     }
+
+    public function calam(){
+        return $this->hasOne(CaLam::class, 'MaCa', 'MaCa');
+    }
 }

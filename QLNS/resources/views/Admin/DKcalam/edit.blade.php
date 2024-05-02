@@ -20,7 +20,6 @@
                                 value="{{ $data->nhanvien->Hoten }}" readonly>
                             <label for="floatingInput">Nhân Viên</label>
 
-                            <label for="floatingSelect">Nhân Viên</label>
                         </div>
                         <div class="form-floating mb-3">
                             <select class="form-select" id="floatingSelect" aria-label="Floating label select example"
@@ -36,6 +35,7 @@
 
                         <button type="submit" class="btn btn-primary">Update</button>
                         <a href="{{ route('admin.deletedkcalam', ['Id' => $data->Id]) }}" class="btn btn-primary btn-danger">Delete</a>
+                        <a href="{{ route('admin.chamcong.form', ['Id' => $data->Id]) }}" class="btn btn-primary btn-info">Chấm Công</a>
 
 `                      </form>
                 </div>

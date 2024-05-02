@@ -11,7 +11,7 @@
                         <h6 class="mb-4"><a href="{{ route('admin.dkcalam.form') }}">Back</a></h6>
 
                         <div class="form-floating mb-3">
-                            <input type="date" class="form-control" id="floatingInput" name="date" required>
+                            <input type="date" class="form-control" id="floatingInput" name="date" value="{{ $date }}" required>
                             <label for="floatingInput">Ngày</label>
                         </div>
                         <div class="form-floating mb-3">
@@ -25,9 +25,8 @@
                             <label for="floatingSelect">Ca Làm</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example"
-                                name="nhanvien" required>
-                                <option value=""></option>
+                            <select style="height: 150px" class="form-select" id="nhanvien" name="nhanvien[]"  multiple required>
+
                                 @foreach ($nhanvien as $item)
                                     <option value="{{ $item->MaNV }}">{{ $item->Hoten }}</option>
                                 @endforeach

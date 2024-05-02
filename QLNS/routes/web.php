@@ -131,6 +131,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/import', [DangKyCaLamController::class, 'import'])->name('admin.importdkcalam.submit');
         Route::get('/template', [DangKyCaLamController::class, 'teamplateExport'])->name('admin.templateExportdkcalam.submit');
         Route::get('/delete/{Id}', [DangKyCaLamController::class, 'delete'])->name('admin.deletedkcalam');
+        Route::get('/cham-cong/{Id}', [DangKyCaLamController::class, 'formchamcong'])->name('admin.chamcong.form');
+
         // });
     });
 });
